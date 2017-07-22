@@ -17,7 +17,6 @@ const EventWorker = require('event-worker')
 
 const worker = new EventWorker({path: 'path/to/my/worker.js'})
 
-
 let result = await worker.emit('getUserById', {id: '30242'})
 
 // yay I got the result from a web worker.
@@ -31,9 +30,9 @@ const EventWorker = require('event-worker')
 
 const worker = new EventWorker()
 
-worker.on('getUserById', async ({payload, resolve})=> {
+worker.on('getUserById', async ({data, resolve})=> {
 
-  let user = await getUSer('id', payload.id) 
+  let user = await getUSer('id', data.id) 
 
   resolve(user) // Respond back to the main thread with the data requested.
 })
@@ -52,7 +51,7 @@ const worker = new EventWorker()
 
 Error handling works the same as you would expect from a promise:
 
-From main thread (main.js)
+From main thread (main.js):
 
 ```js
 
@@ -68,7 +67,7 @@ worker.emit('rejectThisCall')
 
 ```
 
-From worker: (worker.js)
+From worker (worker.js):
 ```js
 importScripts('path/to/source/event-worker.js')
 
@@ -91,12 +90,12 @@ worker.on('throwError', ()=>{
 
 Creates a new instance 
 
-### emit(eventName, payload) `Promise`
+### emit(eventName, data) `Promise`
 
 Emits a event.
   * eventName `String`
 
-  * payload `Any`
+  * data `Any`
 
 
 ### on(eventName, callback) `void`
@@ -107,13 +106,13 @@ Listens for an event.
 
 * callback `function(object) => void`
 
-  Gets executed when the eventName is emited.
+  Gets executed when eventName is emited.
 
   * object 
-    * object.payload `any`
+    * object.data `any`
 
-      Data that was sent from the event emitter to the listener. It can be any type of data.
-
+      Data that was sent from the event emitter to the listener. 
+      
     * object.resolve  `function`
 
       Function that allows the listerner to respond back the original event emitter.

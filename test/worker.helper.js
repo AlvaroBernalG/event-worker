@@ -6,13 +6,13 @@ const sum = (a, b) => a + b
 
 let worker = new EventWorker()
 
-worker.on('sum', async ({payload, resolve}) => {
-  let r = sum(...payload)
+worker.on('sum', async ({data, resolve}) => {
+  let r = sum(...data)
 
   resolve(r)
 })
 
-worker.on('getUserById', async({payload, resolve}) => {
+worker.on('getUserById', async({data, resolve}) => {
   // simulate the delay of calling a databse/webservice
   await wait(300)
 

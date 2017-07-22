@@ -18,20 +18,20 @@ describe('EventWorker', () => {
   it('It should not mix result calls of the same events.', function (done) {
     let calls = 0
 
-    worker.emit('sum', [2, 3]).then(payload=> {
-      expect(payload).to.equal(5)
+    worker.emit('sum', [2, 3]).then(data=> {
+      expect(data).to.equal(5)
       calls += 1
       if (calls === 3) done()
     })
 
-    worker.emit('sum', [7, 3]).then(payload=> {
-      expect(payload).to.equal(10)
+    worker.emit('sum', [7, 3]).then(data=> {
+      expect(data).to.equal(10)
       calls += 1
       if (calls === 3) done()
     })
 
-    worker.emit('sum', [3, 3]).then(payload=> {
-      expect(payload).to.equal(6)
+    worker.emit('sum', [3, 3]).then(data=> {
+      expect(data).to.equal(6)
       calls += 1
       if (calls === 3) done()
     })
@@ -39,8 +39,8 @@ describe('EventWorker', () => {
 
   it('should be able to listen for events', (done)=> {
 
-    worker.on('getUser', ({payload}) => {
-      expect(payload.name).to.equal('neil')
+    worker.on('getUser', ({data}) => {
+      expect(data.name).to.equal('neil')
       done()
     })
   })
