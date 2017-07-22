@@ -12,6 +12,7 @@ $ npm install event-worker --save
 ## Usage 
 
 In your main thread (main.js): 
+
 ```js
 const EventWorker = require('event-worker')
 
@@ -29,7 +30,7 @@ let result = await worker.emit('getUserById', {id: '30242'})
 
 ```
 
-And then in your web worker (worker.js) you could do something like:
+And then in your web worker (worker.js) you can listen for that event and respond back with the data requested by your main thread:
 
 ```js
 const EventWorker = require('event-worker')
@@ -44,7 +45,7 @@ worker.on('getUserById', async ({payload, resolve})=> {
 })
 ```
 
-You can also use the built in function `importScripts` from your web worker to import the library like so:
+Instead of embedding the library to the worker with a module bundler, you can use the built in function `importScripts` from your web worker like so:
 
 ```js
 importScripts('path/to/source/event-worker.js')
@@ -56,7 +57,7 @@ const worker = new EventWorker()
 ```
 
 #### Error Handling
-Error handling works the same as you would expect from a promise:
+Error handling works the same as you would expect from a promise executed on the same thread:
 
 From main thread (main.js):
 
@@ -69,7 +70,6 @@ worker.emit('rejectThisCall')
   .catch((reason)=> { 
     console.log('Rejected because: "${reason}" ')
   })
-  // Rejected because: "I am bad.."
 
 ```
 
@@ -83,10 +83,15 @@ worker.on('rejectThisCall', ({reject})=> {
   reject('I am bad..')
 })
 
-worker.on('rejectThisCall', ({reject})=> {
-  throw new Error() // it also catches thrown errors.
+//throwing errors
+worker.on('rejectThisCall', ()=> {
+  throw new Error()
 })
 
+// throwing async errors 
+worker.on('rejectThisCallAsync', async ()=> {
+  throw new Error() 
+})
 ```
 
 #### Workload splitting
@@ -121,7 +126,6 @@ importScripts('path/to/source/event-worker.js')
 const EventWorker = require('event-worker') 
 
 const worker = new EventWorker()
-
 
 worker.on('multiply_by_2', ({payload, resolve})=>{
   const multipliedByTwo = payload * 2

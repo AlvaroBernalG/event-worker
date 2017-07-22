@@ -19,11 +19,15 @@ worker.on('getUserById', async({resolve}) => {
   resolve({name: 'neil', lastname: 'degrasse tyson', id: 2})
 })
 
-worker.on('rejectThis', ({reject, resolve}) => {
+worker.on('rejectThis', ({reject}) => {
   reject('error')
 })
 
-worker.on('throwError', ({reject, resolve}) => {
+worker.on('throwError', () => {
+  throw new Error()
+})
+
+worker.on('throwErrorAsync', async () => {
   throw new Error()
 })
 

@@ -75,4 +75,12 @@ describe('EventWorker', () => {
       done()
     })
   })
+
+  it('should be able to catch async errors', (done) => {
+    worker.emit('throwErrorAsync').then(() => {
+      throw new Error('This callback shouldn\'t be called.')
+    }).catch(error => {
+      done()
+    })
+  })
 })
