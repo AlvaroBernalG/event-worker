@@ -43,11 +43,11 @@
 
     [_onIncomingMessage] () {
       return _onMessage((messageId, eventName, error, payload) => {
-        const callbacks = this.callbacks
+        const callbacks      = this.callbacks
         const responseBundle = this[_createResponseBundle](messageId, eventName)
-        const rejectBundle = this[_createRejectBundle](messageId, eventName)
-        const callbackOpts = error ? {error } : { payload, resolve: responseBundle, reject: rejectBundle }
-        const callback = callbacks[messageId] || callbacks[eventName]
+        const rejectBundle   = this[_createRejectBundle](messageId, eventName)
+        const callbackOpts   = error ? {error } : { payload, resolve: responseBundle, reject: rejectBundle }
+        const callback       = callbacks[messageId] || callbacks[eventName]
 
         if (callback === undefined) return
 

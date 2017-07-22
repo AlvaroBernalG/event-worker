@@ -18,15 +18,18 @@ const EventWorker = require('event-worker')
 
 const worker = new EventWorker({src: 'path/to/my/worker.js'})
 
-let result = await worker.emit('getUserById', {id: '30242'})
+async function getUser(){
+  
+  let result = await worker.emit('getUserById', {id: '30242'})
+  /*
+  {
+    id: '30242',
+    name: 'neil',
+    lastname: 'tyson degrasse'
+  }
+  */
 
-/*
-{
-  id: '30242',
-  name: 'neil',
-  lastname: 'tyson degrasse'
-}
-*/
+//... 
 
 ```
 
@@ -45,7 +48,7 @@ worker.on('getUserById', async ({payload, resolve})=> {
 })
 ```
 
-Instead of embedding the library to the worker with a module bundler, you can use the built in function `importScripts` from your web worker like so:
+Instead of embedding the library in the worker file with a module bundler, you can use the built in function `importScripts` from your web worker like so:
 
 ```js
 importScripts('path/to/source/event-worker.js')
@@ -53,11 +56,12 @@ importScripts('path/to/source/event-worker.js')
 const worker = new EventWorker()
 
 // ...
-
 ```
+EventWorker reference is injected into the global scope.
+
 
 #### Error Handling
-Error handling works the same as you would expect from a promise executed on the same thread:
+Error handling works the same as you would expect from a promise executed in the same thread:
 
 From main thread (main.js):
 
@@ -133,6 +137,43 @@ worker.on('multiply_by_2', ({payload, resolve})=>{
 })
 
 ```
+#### Bidirectional communication
+
+You can listen for events triggered by your workers. Usefull if for example you have a long running worker that fetches the web and parses the content with the expectation of finding something interesting. 
+
+From main thread (main.js):
+```js
+//...
+
+worker.on('interestingData', ({payload, resolve})=>{
+  
+  doSomethingWithInterestingData(payload)
+
+  resolve('Good job worker!') 
+
+})
+
+//..
+```
+
+From worker (worker.js):
+```js
+//...
+
+setInterval( async ()=>{
+  let data = parseResult((await fetch('http://interesting.news.com')))
+  
+  if(isInteresting(data)){
+    let mainThreadResponse = await worker.emit('interestingData', data)
+    //..
+
+  }
+}, 1000)
+//..
+
+```
+
+
 
 ## API
 
