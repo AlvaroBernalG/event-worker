@@ -15,11 +15,17 @@ In your main thread (main.js):
 ```js
 const EventWorker = require('event-worker')
 
-const worker = new EventWorker({path: 'path/to/my/worker.js'})
+const worker = new EventWorker({src: 'path/to/my/worker.js'})
 
 let result = await worker.emit('getUserById', {id: '30242'})
 
-// yay I got the result from a web worker.
+/*
+{
+  id: '30242',
+  name: 'neil',
+  lastname: 'tyson degrasse'
+}
+*/
 
 ```
 
@@ -49,15 +55,15 @@ const worker = new EventWorker()
 
 ```
 
+#### Error Handling
 Error handling works the same as you would expect from a promise:
 
 From main thread (main.js):
 
 ```js
-
 const EventWorker = require('event-worker')
-const worker = new EventWorker({path: 'path/to/my/worker.js'})
 
+const worker = new EventWorker({src: 'path/to/my/worker.js'})
 
 worker.emit('rejectThisCall')
   .catch((reason)=> { 
@@ -77,15 +83,66 @@ worker.on('rejectThisCall', ({reject})=> {
   reject('I am bad..')
 })
 
+worker.on('rejectThisCall', ({reject})=> {
+  throw new Error() // it also catches thrown errors.
+})
+
+```
+
+#### Workload splitting
+
+If you want to keep your main thread running smoothly dividing the work load of expensive computational task between multiple web workers becomes trivial and fun. 
+
+From main thread (main.js):
+```js
+const EventWorker = require('event-worker') 
+
+const workerOpts = {src: 'path/to/my/worker.js'}
+
+const workerPool = [
+  new EventWorker(workerOpts),
+  new EventWorker(workerOpts),
+  new EventWorker(workerOpts)
+] 
+
+const sum = (a, b) => a + b
+
+const multiplyBy2InOtherThread = (worker, number) => worker.emit('multiply_by_2', number)
+
+(await Promise.all(
+  workerPool.map(multiplyBy2InOtherThread)
+)).reduce(sum, 0) // 6
+
+```
+From worker (worker.js):
+```js
+importScripts('path/to/source/event-worker.js')
+
+const EventWorker = require('event-worker') 
+
+const worker = new EventWorker()
+
+
+worker.on('multiply_by_2', ({payload, resolve})=>{
+  const multipliedByTwo = payload * 2
+  resolve(multipliedByTwo) 
+})
+
 ```
 
 ## API
 
-### new EventWorker(options) `EventWorker`
+#### new EventWorker(options) `EventWorker`
 
 Creates a new instance 
+  * options `object`
+    * options.src 
 
-### emit(eventName, data) `Promise`
+      Path or source of the web worker. If no src is passed, it will assume that the environment is a web worker. 
+
+
+
+#### emit(eventName, data) `Promise`
 
 Emits a event.
   * eventName `String`
@@ -93,7 +150,7 @@ Emits a event.
   * data `Any`
 
 
-### on(eventName, callback) `void`
+#### on(eventName, callback) `void`
 
 Listens for an event. 
 
@@ -120,7 +177,6 @@ Listens for an event.
 ## Contributing
 
 All contributions are welcome.
-
 
 ## License
 MIT © [Alvaro Bernal](https://github.com/AlvaroBernalG/) 

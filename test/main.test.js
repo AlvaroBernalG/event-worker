@@ -5,7 +5,7 @@ describe('EventWorker', () => {
   const workerPath = 'base/test/worker.helper.js'
 
   beforeEach(function () {
-    worker = new EventWorker({ path: workerPath })
+    worker = new EventWorker({ src: workerPath })
   })
 
   it('should be able to emit events and wait for the response.', async() => {
@@ -48,7 +48,7 @@ describe('EventWorker', () => {
 
     const sum = (a, b) => a + b
 
-    const workerPool = actions.map(a => new EventWorker({path: workerPath}))
+    const workerPool = actions.map(a => new EventWorker({src: workerPath}))
 
     this.timeout(5000)
 
@@ -64,6 +64,14 @@ describe('EventWorker', () => {
       throw new Error('This callback shouldn\'t be called.')
     }).catch(error => {
       expect(error).to.equal('error')
+      done()
+    })
+  })
+
+  it('should be able to catch errors', (done) => {
+    worker.emit('throwError').then(() => {
+      throw new Error('This callback shouldn\'t be called.')
+    }).catch(error => {
       done()
     })
   })

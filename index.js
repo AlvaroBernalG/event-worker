@@ -1,5 +1,4 @@
 (() => {
-  const _that = this
 
   const _newId = ((id = 0) => () => id += 1)()
 
@@ -9,23 +8,45 @@
   }
 
   const _createResponseBundle = Symbol('_createResponseBundle')
-  const _createRejectBundle = Symbol('_createRejectBundle')
+  const _createRejectBundle   = Symbol('_createRejectBundle')
+  const _deleteCallback       = Symbol('_deleteCallback')
+  const _getNewId             = Symbol('_getNewId')
+  const _onIncomingMessage    = Symbol('_onIncomingMessage')
 
   class EventWorker {
-    constructor ({path, name = ''} = {}) {
+
+    constructor ({src, name} = {}) {
       this.callbacks = {}
-
       this.name = name
+      // if source is not passed, I assume the environment is the worker
+      this.worker = src ? new Worker(src) : self
+      this.worker.onmessage = this[_onIncomingMessage]()
+    }
 
-      // if path is not passed, I assume the environment is the worker
-      this.worker = path ? new Worker(path) : _that
+    emit (eventName, payload) {
+      return new Promise((resolve, reject) => {
+        const messageId = this[_getNewId](eventName)
+        this.on(messageId, ({payload, error}) => {
+          this[_deleteCallback](messageId)
+          if (error) return reject(error)
+          resolve(payload)
+        })
+        this[_createResponseBundle](messageId, eventName)(payload)
+      })
+    }
 
-      this.worker.onmessage = _onMessage((messageId, eventName, error, payload) => {
+    on (id, callback) {
+      this.callbacks[id] = callback
+    }
+
+    [_onIncomingMessage] (){
+      return _onMessage((messageId, eventName, error, payload) => {
         const callbacks = this.callbacks
 
         const responseBundle = this[_createResponseBundle](messageId, eventName)
         const rejectBundle = this[_createRejectBundle](messageId, eventName)
-        const callbackOpts = error ? {error } : { payload, resolve: responseBundle, reject: rejectBundle }
+
+        const callbackOpts = error ? {error, } : { payload, resolve: responseBundle, reject: rejectBundle }
 
         if (callbacks[messageId]) {
           callbacks[messageId](callbackOpts)
@@ -36,7 +57,15 @@
             callbackOpts.reject(error.stack)
           }
         }
-      })
+      }) 
+    }
+
+    [_getNewId] (eventName){
+      return `${_newId()}_${eventName}`
+    }
+
+    [_deleteCallback] (id){
+      delete this.callbacks[id]
     }
 
     [_createResponseBundle] (messageId, eventName) {
@@ -49,22 +78,6 @@
       return (error) => {
         this.worker.postMessage([messageId, eventName, error])
       }
-    }
-
-    emit (eventName, payload) {
-      return new Promise((resolve, reject) => {
-        const messageId = `${_newId()}_${eventName}`
-        this.on(messageId, ({payload, error}) => {
-          delete this.callbacks[messageId]
-          if (error) return reject(error)
-          resolve(payload)
-        })
-        this[_createResponseBundle](messageId, eventName)(payload)
-      })
-    }
-
-    on (id, callback) {
-      this.callbacks[id] = callback
     }
   }
 

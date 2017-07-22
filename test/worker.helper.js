@@ -23,6 +23,10 @@ worker.on('rejectThis', ({reject, resolve}) => {
   reject('error')
 })
 
+worker.on('throwError', ({reject, resolve}) => {
+  throw new Error()
+})
+
 setTimeout(() => {
   worker.emit('getUser', {name: 'neil', lastname: 'degrasse tyson'})
 }, 1000)
