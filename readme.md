@@ -30,9 +30,9 @@ const EventWorker = require('event-worker')
 
 const worker = new EventWorker()
 
-worker.on('getUserById', async ({data, resolve})=> {
+worker.on('getUserById', async ({payload, resolve})=> {
 
-  let user = await getUSer('id', data.id) 
+  let user = await getUSer('id', payload.id) 
 
   resolve(user) // Respond back to the main thread with the data requested.
 })
@@ -77,11 +77,6 @@ worker.on('rejectThisCall', ({reject})=> {
   reject('I am bad..')
 })
 
-
-worker.on('throwError', ()=>{
-  throw new Error()
-  // this will also trigger the reject callback on your main thread.
-})
 ```
 
 ## API
@@ -109,7 +104,7 @@ Listens for an event.
   Gets executed when eventName is emited.
 
   * object 
-    * object.data `any`
+    * object.payload `any`
 
       Data that was sent from the event emitter to the listener. 
       
