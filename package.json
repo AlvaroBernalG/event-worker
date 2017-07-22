@@ -1,0 +1,64 @@
+{
+  "name": "event-worker",
+  "version": "0.0.1",
+  "description": "Minimalistic event/promise driven web worker API",
+  "main": "index.js",
+  "homepage": "https://github.com/alvarobernalg/event-worker.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alvarobernalg/event-worker.git"
+  },
+  "engines": "7",
+  "scripts": {
+    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
+    "test-watch": "node node_modules/karma/bin/karma start --browsers=ChromeHeadless --single-run=false --auto-watch"
+  },
+  "keywords": [
+    "worker",
+    "webworker",
+    "web worker",
+    "promise",
+    "minimal",
+    "events",
+    "webworkers",
+    "threads"
+  ],
+  "author": {
+    "name": "Alvaro Bernal Gimeno",
+    "email": "alvaro.bernal.gimeno@gmail.com"
+  },
+  "license": "M.I.T",
+  "standard": {
+    "global": [
+      "it",
+      "expect",
+      "describe",
+      "test",
+      "self",
+      "Worker",
+      "beforeEach",
+      "importScripts"
+    ]
+  },
+  "reveal": "false",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "browserify": "^14.4.0",
+    "browserify-shim": "^3.8.14",
+    "chai": "^4.1.0",
+    "eslint": "^4.2.0",
+    "karma": "^1.7.0",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-browserify": "^5.1.1",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-mocha": "^1.3.0",
+    "mocha": "^3.4.2",
+    "watchify": "^3.9.0"
+  },
+  "dependencies": {},
+  "files": [
+    "index.js"
+  ]  
+
+}
