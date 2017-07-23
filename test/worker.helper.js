@@ -7,9 +7,11 @@ const sum = (a, b) => a + b
 let worker = new EventWorker()
 
 worker.on('sum', async ({payload, resolve}) => {
+
   let r = sum(...payload)
 
   resolve(r)
+  
 })
 
 worker.on('getUserById', async({resolve}) => {
@@ -34,6 +36,3 @@ worker.on('throwErrorAsync', async () => {
 setTimeout(() => {
   worker.emit('getUser', {name: 'neil', lastname: 'degrasse tyson'})
 }, 1000)
-
-
-

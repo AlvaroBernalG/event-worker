@@ -2,4 +2,6 @@ node_modules
 .DS_Store
 dist
 playground
+readme.html
+server.js
 

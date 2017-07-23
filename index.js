@@ -1,5 +1,4 @@
-(function __inner_self__(){
-
+;(function innerSelf () {
   const _newId = ((id = 0) => () => id += 1)()
 
   const _newEventId = (eventName) => `${_newId()}_${eventName}`
@@ -9,10 +8,10 @@
     fn.call(fn, id, eventName, error, payload)
   }
 
-  const _generateSourceCodeFromFunction = (code) => {
+  const _fromFuncToURL = (func) => {
     const codeToInject = `
-       ${wrapSelfExecFn(__inner_self__ + '')}
-       ${wrapSelfExecFn(code + '', 'new EventWorker()')} 
+       ${wrapSelfExecFn(innerSelf + '')}
+       ${wrapSelfExecFn(func + '', 'new EventWorker()')} 
       `
     return window.URL.createObjectURL(new Blob([codeToInject]))
   }
@@ -21,20 +20,19 @@
 
   const isFunc = (test) => test instanceof Function
 
-  const isString = (test) => typeof test === 'string' 
+  const isString = (test) => typeof test === 'string'
 
   const _createResponseBundle = Symbol('_createResponseBundle')
-  const _createRejectBundle   = Symbol('_createRejectBundle')
-  const _deleteCallback       = Symbol('_deleteCallback')
-  const _onIncomingMessage    = Symbol('_onIncomingMessage')
+  const _createRejectBundle = Symbol('_createRejectBundle')
+  const _deleteCallback = Symbol('_deleteCallback')
+  const _onIncomingMessage = Symbol('_onIncomingMessage')
 
   class EventWorker {
-
     constructor (opts) {
       this.callbacks = {}
       // if opts is undefined, I assume the environment is the worker
-      this.worker = isFunc(opts) ? new Worker(_generateSourceCodeFromFunction(opts))
-        : (isString(opts) ? new Worker(opts) : self) 
+      this.worker = isFunc(opts) ? new Worker(_fromFuncToURL(opts))
+        : (isString(opts) ? new Worker(opts) : self)
       this.worker.onmessage = this[_onIncomingMessage]()
     }
 
@@ -58,11 +56,11 @@
 
     [_onIncomingMessage] () {
       return _onMessage((messageId, eventName, error, payload) => {
-        const callbacks      = this.callbacks
+        const callbacks = this.callbacks
         const responseBundle = this[_createResponseBundle](messageId, eventName)
-        const rejectBundle   = this[_createRejectBundle](messageId, eventName)
-        const callbackOpts   = error ? {error } : { payload, resolve: responseBundle, reject: rejectBundle }
-        const callback       = callbacks[messageId] || callbacks[eventName]
+        const rejectBundle = this[_createRejectBundle](messageId, eventName)
+        const callbackOpts = error ? {error } : { payload, resolve: responseBundle, reject: rejectBundle }
+        const callback = callbacks[messageId] || callbacks[eventName]
 
         if (callback === undefined) return
 
