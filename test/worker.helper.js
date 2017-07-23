@@ -34,3 +34,6 @@ worker.on('throwErrorAsync', async () => {
 setTimeout(() => {
   worker.emit('getUser', {name: 'neil', lastname: 'degrasse tyson'})
 }, 1000)
+
+
+

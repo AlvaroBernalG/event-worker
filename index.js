@@ -1,4 +1,5 @@
-(() => {
+(function __inner_self__(){
+
   const _newId = ((id = 0) => () => id += 1)()
 
   const _newEventId = (eventName) => `${_newId()}_${eventName}`
@@ -8,6 +9,20 @@
     fn.call(fn, id, eventName, error, payload)
   }
 
+  const _generateSourceCodeFromFunction = (code) => {
+    const codeToInject = `
+       ${wrapSelfExecFn(__inner_self__ + '')}
+       ${wrapSelfExecFn(code + '', 'new EventWorker()')} 
+      `
+    return window.URL.createObjectURL(new Blob([codeToInject]))
+  }
+
+  const wrapSelfExecFn = (str, params = '') => `;(${str})(${params});`
+
+  const isFunc = (test) => test instanceof Function
+
+  const isString = (test) => typeof test === 'string' 
+
   const _createResponseBundle = Symbol('_createResponseBundle')
   const _createRejectBundle   = Symbol('_createRejectBundle')
   const _deleteCallback       = Symbol('_deleteCallback')
@@ -15,11 +30,11 @@
 
   class EventWorker {
 
-    constructor ({src, name} = {}) {
+    constructor (opts) {
       this.callbacks = {}
-      this.name = name
-      // if source is not passed, I assume the environment is the worker
-      this.worker = src ? new Worker(src) : self
+      // if opts is undefined, I assume the environment is the worker
+      this.worker = isFunc(opts) ? new Worker(_generateSourceCodeFromFunction(opts))
+        : (isString(opts) ? new Worker(opts) : self) 
       this.worker.onmessage = this[_onIncomingMessage]()
     }
 

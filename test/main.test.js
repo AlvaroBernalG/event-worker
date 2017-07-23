@@ -5,7 +5,7 @@ describe('EventWorker', () => {
   const workerPath = 'base/test/worker.helper.js'
 
   beforeEach(function () {
-    worker = new EventWorker({ src: workerPath })
+    worker = new EventWorker(workerPath)
   })
 
   it('should be able to emit events and wait for the response.', async() => {
@@ -48,7 +48,7 @@ describe('EventWorker', () => {
 
     const sum = (a, b) => a + b
 
-    const workerPool = actions.map(a => new EventWorker({src: workerPath}))
+    const workerPool = actions.map(a => new EventWorker(workerPath))
 
     this.timeout(5000)
 

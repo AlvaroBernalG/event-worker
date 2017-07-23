@@ -16,7 +16,7 @@ In your main thread (main.js):
 ```js
 const EventWorker = require('event-worker')
 
-const worker = new EventWorker({src: 'path/to/my/worker.js'})
+const worker = new EventWorker('path/to/my/worker.js')
 
 async function getUser(){
   
@@ -57,46 +57,8 @@ const worker = new EventWorker()
 
 // ...
 ```
-EventWorker reference is injected into the global scope.
+EventWorker reference is injected into the global scope once it is instantiated.
 
-
-#### Error Handling
-Error handling works the same as you would expect from a promise executed in the same thread:
-
-From main thread (main.js):
-
-```js
-const EventWorker = require('event-worker')
-
-const worker = new EventWorker({src: 'path/to/my/worker.js'})
-
-worker.emit('rejectThisCall')
-  .catch((reason)=> { 
-    console.log('Rejected because: "${reason}" ')
-  })
-
-```
-
-From worker (worker.js):
-```js
-importScripts('path/to/source/event-worker.js')
-
-const worker = new EventWorker()
-
-worker.on('rejectThisCall', ({reject})=> {
-  reject('I am bad..')
-})
-
-//throwing errors
-worker.on('rejectThisCall', ()=> {
-  throw new Error()
-})
-
-// throwing async errors 
-worker.on('rejectThisCallAsync', async ()=> {
-  throw new Error() 
-})
-```
 
 #### Workload splitting
 
@@ -106,12 +68,12 @@ From main thread (main.js):
 ```js
 const EventWorker = require('event-worker') 
 
-const workerOpts = {src: 'path/to/my/worker.js'}
+const workerPath = 'path/to/my/worker.js'
 
 const workerPool = [
-  new EventWorker(workerOpts),
-  new EventWorker(workerOpts),
-  new EventWorker(workerOpts)
+  new EventWorker(workerPath),
+  new EventWorker(workerPath),
+  new EventWorker(workerPath)
 ] 
 
 const sum = (a, b) => a + b
@@ -139,7 +101,7 @@ worker.on('multiply_by_2', ({payload, resolve})=>{
 ```
 #### Bidirectional communication
 
-You can listen for events triggered by your workers. Usefull if for example you have a long running worker that fetches the web and parses the content with the expectation of finding something interesting. 
+You can listen for events triggered by your workers. Useful if for example you have a long running worker that is continously fetching the web with the expectation of finding something interesting. 
 
 From main thread (main.js):
 ```js
@@ -172,18 +134,79 @@ setInterval( async ()=>{
 //..
 
 ```
+#### Inlining code 
+
+Instead of having a separate file for your worker, you can pass a function as an argument and it will get transformed into a web worker. A good option for prototyping.
+
+From main (main.js):
+```js
+
+const worker = new EventWorker(async (mainThread) => {
+  let res = await mainThread.emit('sayingHiFromWorker', 'Hi main thread!')   
+  console.log(res) // Hello worker!
+})
 
 
+worker.on('sayingHiFromWorker', ({payload, resolve})=>{
+  console.log(payload) // Hi main thread!
+
+  resolve("Hello worker!")
+
+})
+
+```
+
+
+#### Error Handling
+Error handling works the same as you would expect from a promise executed in the same thread:
+
+From main thread (main.js):
+
+```js
+const EventWorker = require('event-worker')
+
+const worker = new EventWorker('path/to/my/worker.js')
+
+worker.emit('rejectThisCall')
+  .catch((reason)=> { 
+    console.log('Rejected because: "${reason}" ')
+  })
+
+```
+
+From worker (worker.js):
+```js
+importScripts('path/to/source/event-worker.js')
+
+const worker = new EventWorker()
+
+worker.on('rejectThisCall', ({reject})=> {
+  reject('I am bad..')
+})
+
+//throwing errors
+worker.on('rejectThisCall', ()=> {
+  throw new Error()
+})
+
+// throwing async errors 
+worker.on('rejectThisCallAsync', async ()=> {
+  throw new Error() 
+})
+```
 
 ## API
 
-#### new EventWorker(options) `EventWorker`
+#### new EventWorker(source) `EventWorker`
 
 Creates a new instance 
-  * options `object`
-    * options.src 
+  * source `string | function | undefined`
 
-      Path or source of the web worker. If no src is passed, it will assume that the environment is a web worker. 
+    * If a string is passed: It will assume it is the worker source file path. 
+
+    * If a function is passed: It will assume it is the worker source file path. 
+
+    * If nothing(undefined) is passed it will assume that the environment is the worker. 
 
 
 
