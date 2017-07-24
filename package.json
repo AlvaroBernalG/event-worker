@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Minimalistic event/promise driven web worker API",
   "main": "index.js",
   "homepage": "https://github.com/alvarobernalg/event-worker.git",
@@ -40,7 +40,7 @@
       "importScripts"
     ]
   },
-  "reveal": "true",
+  "reveal": "false",
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
     "browserify": "^14.4.0",
@@ -58,8 +58,8 @@
     "mocha": "^3.4.2",
     "watchify": "^3.9.0"
   },
-  "dependencies": {},
   "files": [
     "index.js"
-  ]
+  ],
+  "dependencies": {}
 }

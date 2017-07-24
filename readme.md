@@ -9,6 +9,10 @@
 $ npm install event-worker --save
 ```
 
+
+## Warning 
+This is a work in progress.
+
 ## Usage 
 
 In your main thread (main.js): 
