@@ -107,7 +107,7 @@ worker.on('multiply_by_2', ({payload, resolve}) => {
 
 #### Bidirectional communication
 
-You can listen for events triggered by your workers. Useful if for example you have a long running worker that is continously fetching the web with the expectation of finding something interesting. 
+You can listen for events triggered by your workers.  
 
 From main thread (main.js):
 ```js
@@ -128,17 +128,12 @@ From worker (worker.js):
 ```js
 //...
 
-setInterval( async ()=>{
-
-  let data = parseResult((await fetch('http://interesting.news.com')))
+async function loop(){
   
-  if(isInteresting(data)){
-
-    let mainThreadResponse = await worker.emit('interestingData', data)
-    //..
-
+  if(somethingInteresting()){
+    let res = await worker.emit('interestingData', {name: 'veryInteresting'})
   }
-}, 1000)
+}
 //..
 
 ```
