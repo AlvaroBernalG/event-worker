@@ -9,11 +9,12 @@
 $ npm install event-worker --save
 ```
 
-
 ## Warning 
 This is a work in progress.
 
 ## Usage 
+
+Basic example
 
 In your main thread (main.js): 
 
@@ -22,9 +23,7 @@ const EventWorker = require('event-worker')
 
 const worker = new EventWorker('path/to/my/worker.js')
 
-async function getUser(){
-  
-  let result = await worker.emit('getUserById', {id: '30242'})
+let result = await worker.emit('getUserById', {id: '30242'})
   /*
   {
     id: '30242',
@@ -35,8 +34,7 @@ async function getUser(){
 //... 
 
 ```
-
-And then in your web worker (worker.js) you can listen for that event and respond back with the data requested by your main thread:
+And then in your web worker (worker.js) you can listen for that event and respond back with the requested data:
 
 ```js
 const EventWorker = require('event-worker')
@@ -48,25 +46,26 @@ worker.on('getUserById', async ({payload, resolve})=> {
   let user = await getUSer('id', payload.id) 
 
   resolve(user) // Respond back to the main thread with the data requested.
+
 })
 
+async function getUser(id){
+
+  let user = await fetchUserFromLocalDatabase(id)
+
+  if(user) return user 
+  
+  user = await fetchUserFromServer(id)
+
+  saveUserInLocaDatabase(user)
+
+  return user
+}
 ```
-
-Instead of embedding the library in the worker file with a module bundler, you can use the built in function `importScripts` from your web worker like so:
-
-```js
-importScripts('path/to/source/event-worker.js')
-
-const worker = new EventWorker()
-
-// ...
-```
-EventWorker reference is injected into the global scope once it is instantiated.
-
 
 #### Workload splitting
 
-If you want to keep your main thread running smoothly dividing the work load of expensive computational task between multiple web workers becomes trivial and fun. 
+If you want to keep your main thread running smoothly dividing the work load of expensive computational task between multiple web workers becomes easier. 
 
 From main thread (main.js):
 
@@ -91,8 +90,8 @@ const multiplyBy2InOtherThread = (worker, number) => worker.emit('multiply_by_2'
   )).reduce(sum, 0)
 )() // 6
 
-
 ```
+
 From worker (worker.js):
 ```js
 importScripts('path/to/source/event-worker.js')
@@ -125,23 +124,22 @@ worker.on('interestingData', ({payload, resolve})=>{
 ```
 
 From worker (worker.js):
-```js
-//...
 
-async function loop(){
-  
-  if(somethingInteresting()){
-    let res = await worker.emit('interestingData', {name: 'veryInteresting'})
-  }
-}
-//..
+```js
+
+//...
+const res = await worker.emit('interestingData', 'interestingString')
+
+res // => 'Good job worker!!'
 
 ```
 #### Inlining code 
 
-Instead of having a separate file for your worker, you can pass a function as an argument to the constructor of EventWorker. A good option for prototyping.
+Instead of having a separate file for your worker, you can wrap your code inside a function and pass it as
+an argument to the constructor of EventWorker. This is a good option when prototyping.
 
 From main (main.js):
+
 ```js
 
 const worker = new EventWorker(async (mainThread) => {
@@ -163,17 +161,17 @@ worker.on('sayingHiFromWorker', ({payload, resolve}) => {
 
 ##### Caveat
 
-When you inline functions it is easy to get confused by the scopes. If you try to access a variable that is outside the scope of the function it will fail. 
+When you inline functions it is easy to get confused by the execution context. If you try to access a variable that is outside the scope of the inline function it will fail. 
 
 ```js
 
 const favoriteAnimal = 'chiguire'
 
 const worker = new EventWorker(async (mainThread) => {
-
+  // This will get executed in a worker.
   mainThread.on('onGetAnimals', ()=>{
 
-    console.log(favoriteAnimal) // fails. favoriteAnimal variable is not in the same execution scope.
+    console.log(favoriteAnimal) // fails. favoriteAnimal variable is not in the same execution context.
 
     //...
   })   
@@ -181,7 +179,6 @@ const worker = new EventWorker(async (mainThread) => {
 })
 
 ```
-
 #### Error Handling
 
 Error handling works the same as you would expect from a promise executed in the same thread:
@@ -221,6 +218,20 @@ worker.on('rejectThisCallAsync', async ()=> {
 })
 
 ```
+
+Instead of embedding event-worker into your worker file with a module bundler, you can use the built in function `importScripts`:
+
+```js
+
+importScripts('path/to/source/event-worker.js')
+
+const worker = new EventWorker()
+
+// ...
+```
+
+EventWorker reference is injected into the global scope once it's loaded.
+
 
 ## API
 

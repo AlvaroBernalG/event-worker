@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Minimalistic event/promise driven web worker API",
   "main": "index.js",
   "homepage": "https://github.com/alvarobernalg/event-worker.git",
