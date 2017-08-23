@@ -43,7 +43,7 @@ const worker = new EventWorker()
 
 worker.on('getUserById', async ({payload, resolve})=> {
 
-  let user = await getUSer('id', payload.id) 
+  let user = await getUser('id', payload.id)
 
   resolve(user) // Respond back to the main thread with the data requested.
 
