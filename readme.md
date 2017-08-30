@@ -1,4 +1,4 @@
-# event-worker 
+# event-worker
 > Minimalistic event/promified driven web worker abstraction.
 
 [![Build Status](https://travis-ci.org/AlvaroBernalG/event-worker.svg?branch=master)](https://travis-ci.org/AlvaroBernalG/event-worker) [![npm version](https://badge.fury.io/js/event-worker.svg)](https://badge.fury.io/js/event-worker) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
@@ -9,14 +9,11 @@
 $ npm install event-worker --save
 ```
 
-## Warning 
-This is a work in progress.
-
-## Usage 
+## Usage
 
 Basic example
 
-In your main thread (main.js): 
+In your main thread (main.js):
 
 ```js
 const EventWorker = require('event-worker')
@@ -31,7 +28,7 @@ let result = await worker.emit('getUserById', {id: '30242'})
     lastname: 'tyson degrasse'
   }
   */
-//... 
+//...
 
 ```
 And then in your web worker (worker.js) you can listen for that event and respond back with the requested data:
@@ -53,8 +50,8 @@ async function getUser(id){
 
   let user = await fetchUserFromLocalDatabase(id)
 
-  if(user) return user 
-  
+  if(user) return user
+
   user = await fetchUserFromServer(id)
 
   saveUserInLocaDatabase(user)
@@ -65,12 +62,12 @@ async function getUser(id){
 
 #### Workload splitting
 
-If you want to keep your main thread running smoothly dividing the work load of expensive computational task between multiple web workers becomes easier. 
+If you want to keep your main thread running smoothly dividing the work load of expensive computational task between multiple web workers becomes easier.
 
 From main thread (main.js):
 
 ```js
-const EventWorker = require('event-worker') 
+const EventWorker = require('event-worker')
 
 const workerPath = 'path/to/my/worker.js'
 
@@ -78,7 +75,7 @@ const workerPool = [
   new EventWorker(workerPath),
   new EventWorker(workerPath),
   new EventWorker(workerPath)
-] 
+]
 
 const sum = (a, b) => a + b
 
@@ -99,7 +96,7 @@ importScripts('path/to/source/event-worker.js')
 const worker = new EventWorker()
 
 worker.on('multiply_by_2', ({payload, resolve}) => {
-  resolve(payload * 2) 
+  resolve(payload * 2)
 })
 
 ```
@@ -113,10 +110,10 @@ From main thread (main.js):
 //...
 
 worker.on('interestingData', ({payload, resolve})=>{
-  
+
   doSomethingWithInterestingData(payload)
 
-  resolve('Good job worker!') 
+  resolve('Good job worker!')
 
 })
 
@@ -133,7 +130,7 @@ const res = await worker.emit('interestingData', 'interestingString')
 res // => 'Good job worker!!'
 
 ```
-#### Inlining code 
+#### Inlining code
 
 Instead of having a separate file for your worker, you can wrap your code inside a function and pass it as
 an argument to the constructor of EventWorker. This is a good option when prototyping.
@@ -161,7 +158,7 @@ worker.on('sayingHiFromWorker', ({payload, resolve}) => {
 
 ##### Caveat
 
-When you inline functions it is easy to get confused by the execution context. If you try to access a variable that is outside the scope of the inline function it will fail. 
+When you inline functions it is easy to get confused by the execution context. If you try to access a variable that is outside the scope of the inline function it will fail.
 
 ```js
 
@@ -191,7 +188,7 @@ const EventWorker = require('event-worker')
 const worker = new EventWorker('path/to/my/worker.js')
 
 worker.emit('rejectThisCall')
-  .catch((reason) => { 
+  .catch((reason) => {
     console.log(`Rejected because: "${reason}" `)
   })
 
@@ -212,9 +209,9 @@ worker.on('rejectThisCall', () => {
   throw new Error()
 })
 
-// throwing async errors 
+// throwing async errors
 worker.on('rejectThisCallAsync', async ()=> {
-  throw new Error() 
+  throw new Error()
 })
 
 ```
@@ -237,14 +234,14 @@ EventWorker reference is injected into the global scope once it's loaded.
 
 #### new EventWorker(source) `EventWorker`
 
-Creates a new instance 
+Creates a new instance
   * source `string | function | undefined`
 
-    * If a string is passed: It will assume it is the worker source file path. 
+    * If a string is passed: It will assume it is the worker source file path.
 
-    * If a function is passed it will get converted into a string an then transformed into a worker. 
+    * If a function is passed it will get converted into a string an then transformed into a worker.
 
-    * If nothing (undefined) is passed it will assume that the environment is the worker. 
+    * If nothing (undefined) is passed it will assume that the environment is the worker.
 
 
 
@@ -258,7 +255,7 @@ Emits a event.
 
 #### on(eventName, callback) `void`
 
-Registers  for an event. 
+Registers  for an event.
 
 * eventName
 
@@ -266,11 +263,11 @@ Registers  for an event.
 
   Gets executed when eventName is emited.
 
-  * object 
+  * object
     * object.payload `any`
 
-      Data sent from the event emitter to the listener. 
-      
+      Data sent from the event emitter to the listener.
+
     * object.resolve  `function`
 
       Function that allows the listerner to resolve the promise.
@@ -285,4 +282,4 @@ Registers  for an event.
 All contributions are welcome.
 
 ## License
-MIT © [Alvaro Bernal](https://github.com/AlvaroBernalG/) 
+MIT © [Alvaro Bernal](https://github.com/AlvaroBernalG/)

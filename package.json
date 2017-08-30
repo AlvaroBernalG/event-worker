@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "A simpler way of dealing with Web Workers",
   "main": "index.js",
   "homepage": "https://github.com/alvarobernalg/event-worker.git",
@@ -41,7 +41,7 @@
       "importScripts"
     ]
   },
-  "reveal": "false",
+  "reveal": "true",
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
     "browserify": "^14.4.0",
