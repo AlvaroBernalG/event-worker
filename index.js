@@ -11,7 +11,7 @@
   const _fromFuncToURL = (func) => {
     const codeToInject = `
        ${wrapSelfExecFn(innerSelf + '')}
-       ${wrapSelfExecFn(func + '', 'new EventWorker()')} 
+       ${wrapSelfExecFn(func + '', 'new EventWorker()')}
       `
     return window.URL.createObjectURL(new Blob([codeToInject]))
   }
@@ -52,6 +52,7 @@
 
     on (id, callback) {
       this.callbacks[id] = callback
+      return this
     }
 
     [_onIncomingMessage] () {

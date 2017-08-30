@@ -83,4 +83,21 @@ describe('EventWorker', () => {
       done()
     })
   })
+
+  it('should be able to chain on() method', (done) => {
+
+    let counter = 0
+    let res = worker.on('chain1', ({payload, resolve}) => {
+
+      counter = counter + payload
+
+      if (counter === 3) done()
+
+    }).on('chain2', ({payload, resolve}) => {
+      counter = counter + payload
+
+      if(counter === 3) done()
+
+    })
+  })
 })
