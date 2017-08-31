@@ -71,7 +71,7 @@ describe('EventWorker', () => {
   it('should be able to catch errors', (done) => {
     worker.emit('throwError').then(() => {
       throw new Error('This callback shouldn\'t be called.')
-    }).catch(error => {
+    }).catch(() => {
       done()
     })
   })
@@ -79,25 +79,21 @@ describe('EventWorker', () => {
   it('should be able to catch async errors', (done) => {
     worker.emit('throwErrorAsync').then(() => {
       throw new Error('This callback shouldn\'t be called.')
-    }).catch(error => {
+    }).catch(() => {
       done()
     })
   })
 
   it('should be able to chain on() method', (done) => {
-
     let counter = 0
-    let res = worker.on('chain1', ({payload, resolve}) => {
-
+    worker.on('chain1', ({payload, resolve}) => {
       counter = counter + payload
 
       if (counter === 3) done()
-
     }).on('chain2', ({payload, resolve}) => {
       counter = counter + payload
 
-      if(counter === 3) done()
-
+      if (counter === 3) done()
     })
   })
 })

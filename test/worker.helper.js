@@ -7,11 +7,9 @@ const sum = (a, b) => a + b
 let worker = new EventWorker()
 
 worker.on('sum', async ({payload, resolve}) => {
-
   let r = sum(...payload)
 
   resolve(r)
-
 })
 
 worker.on('getUserById', async({resolve}) => {
@@ -37,6 +35,6 @@ setTimeout(() => {
   worker.emit('getUser', {name: 'neil', lastname: 'degrasse tyson'})
 }, 1000)
 
-//should be able to chain on() method
+// should be able to chain on() method
 worker.emit('chain1', 1)
 worker.emit('chain2', 2)

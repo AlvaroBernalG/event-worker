@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "A simpler way of dealing with Web Workers",
   "main": "index.js",
   "homepage": "https://github.com/alvarobernalg/event-worker.git",
@@ -11,7 +11,8 @@
   "engines": "7",
   "scripts": {
     "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
-    "test-watch": "node node_modules/karma/bin/karma start --browsers=ChromeHeadless --single-run=false --auto-watch"
+    "test-watch": "node node_modules/karma/bin/karma start --browsers=ChromeHeadless --single-run=false --auto-watch",
+    "format": "./node_modules/standard/bin/cmd.js"
   },
   "keywords": [
     "worker",
@@ -38,10 +39,13 @@
       "self",
       "Worker",
       "beforeEach",
-      "importScripts"
+      "importScripts",
+      "Blob",
+      "EventWorker"
     ]
   },
   "reveal": "true",
+  "dependencies": {},
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
     "browserify": "^14.4.0",
@@ -57,10 +61,10 @@
     "karma-mocha": "^1.3.0",
     "live-server": "^1.2.0",
     "mocha": "^3.4.2",
+    "standard": "^10.0.3",
     "watchify": "^3.9.0"
   },
   "files": [
     "index.js"
-  ],
-  "dependencies": {}
+  ]
 }

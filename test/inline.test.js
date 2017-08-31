@@ -2,7 +2,6 @@ const EventWorker = require('../index.js')
 
 describe('Inlining EventWorker', () => {
   it('Main thread should be able to communicate with inline worker', (done) => {
-    
     const workerCode = mainThread => {
       mainThread.on('test', ({payload, resolve}) => {
         resolve('works')
@@ -15,11 +14,9 @@ describe('Inlining EventWorker', () => {
       expect(payload).to.equal('works')
       done()
     })
-
   })
 
   it('Main thread should be able to receive events of a inline worker', (done) => {
-
     const workerCode = function (mainThread) {
       mainThread.emit('test', 3)
     }
@@ -30,6 +27,5 @@ describe('Inlining EventWorker', () => {
       expect(payload).to.equal(3)
       done()
     })
-
   })
 })

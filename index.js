@@ -10,17 +10,17 @@
 
   const _fromFuncToURL = (func) => {
     const codeToInject = `
-       ${wrapSelfExecFn(innerSelf + '')}
-       ${wrapSelfExecFn(func + '', 'new EventWorker()')}
+       ${_wrapSelfExecFn(innerSelf + '')}
+       ${_wrapSelfExecFn(func + '', 'new EventWorker()')}
       `
     return window.URL.createObjectURL(new Blob([codeToInject]))
   }
 
-  const wrapSelfExecFn = (str, params = '') => `;(${str})(${params});`
+  const _wrapSelfExecFn = (str, params = '') => `;(${str})(${params});`
 
-  const isFunc = (test) => test instanceof Function
+  const _isFunc = (test) => test instanceof Function
 
-  const isString = (test) => typeof test === 'string'
+  const _isString = (test) => typeof test === 'string'
 
   const _createResponseBundle = Symbol('_createResponseBundle')
   const _createRejectBundle = Symbol('_createRejectBundle')
@@ -31,8 +31,8 @@
     constructor (opts) {
       this.callbacks = {}
       // if opts is undefined, I assume the environment is the worker
-      this.worker = isFunc(opts) ? new Worker(_fromFuncToURL(opts))
-        : (isString(opts) ? new Worker(opts) : self)
+      this.worker = _isFunc(opts) ? new Worker(_fromFuncToURL(opts))
+        : (_isString(opts) ? new Worker(opts) : self)
       this.worker.onmessage = this[_onIncomingMessage]()
     }
 
