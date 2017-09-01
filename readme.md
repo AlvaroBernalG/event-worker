@@ -276,6 +276,9 @@ Registers  for an event.
 
       Function that allows the listener to reject the promise.
 
+### terminate() `void`
+
+Immediately terminates the Worker. This does not offer the worker an opportunity to finish its operations; it is simply stopped at once.
 
 ## Contributing
 

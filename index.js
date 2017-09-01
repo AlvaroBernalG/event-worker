@@ -30,6 +30,7 @@
   class EventWorker {
     constructor (opts) {
       this.callbacks = {}
+      this.terminated = false
       // if opts is undefined, I assume the environment is the worker
       this.worker = _isFunc(opts) ? new Worker(_fromFuncToURL(opts))
         : (_isString(opts) ? new Worker(opts) : self)
@@ -53,6 +54,11 @@
     on (id, callback) {
       this.callbacks[id] = callback
       return this
+    }
+
+    terminate () {
+      (this.worker.terminate) ? this.worker.terminate() : close()
+      this.terminated = true
     }
 
     [_onIncomingMessage] () {

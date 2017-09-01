@@ -38,3 +38,8 @@ setTimeout(() => {
 // should be able to chain on() method
 worker.emit('chain1', 1)
 worker.emit('chain2', 2)
+
+//It should be able to terminate the execution of a worker
+worker.on('termination', ({payload, resolve})=>{
+  resolve('Noope, I am still alive')
+})

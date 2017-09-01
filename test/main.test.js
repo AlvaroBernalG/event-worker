@@ -1,5 +1,8 @@
 var EventWorker = require('../index.js')
 
+
+const wait = (ms)=> new Promise((resolve) => setTimeout(resolve, ms))
+
 describe('EventWorker', () => {
   let worker
   const workerPath = 'base/test/worker.helper.js'
@@ -95,5 +98,36 @@ describe('EventWorker', () => {
 
       if (counter === 3) done()
     })
+  })
+
+  it('It should be able to terminate the execution of a worker', async () => {
+
+    const wb = new EventWorker(workerPath)
+
+    let msg = await wb.emit('termination')
+
+
+    expect(msg).to.equal('Noope, I am still alive')
+
+    wb.terminate()
+
+    expect(wb.terminated).to.equal(true)
+
+    let gotExecuted = false
+
+    wb.emit('termination').then(()=>{
+      // This callback should never get exeuted.
+      // if it does, the termination method failed.
+      gotExecuted = true
+    })
+
+    await wait(1000)
+
+    if (gotExecuted === true){
+      return expect(true).to.equal(false)
+    }
+
+    // Did not throw any errors.
+
   })
 })
