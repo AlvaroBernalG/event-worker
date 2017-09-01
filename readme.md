@@ -253,7 +253,7 @@ Emits a event.
   * data `Any`
 
 
-#### on(eventName, callback) `void`
+#### on(eventName, callback) `EventWorker`
 
 Registers  for an event.
 
