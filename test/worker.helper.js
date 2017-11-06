@@ -4,23 +4,26 @@ const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 const sum = (a, b) => a + b
 
-let worker = new EventWorker()
+const worker = new EventWorker()
 
-worker.on('sum', async ({payload, resolve}) => {
-  let r = sum(...payload)
-
-  resolve(r)
+worker.on('sum', ({payload}) => {
+  return new Promise((resolve, reject) => {
+    const r = sum(...payload)
+    resolve(r)
+  })
 })
 
-worker.on('getUserById', async({resolve}) => {
+worker.on('getUserById', async () => {
   // simulate the delay of calling a databse/webservice
   await wait(300)
 
-  resolve({name: 'neil', lastname: 'degrasse tyson', id: 2})
+  return {name: 'neil', lastname: 'degrasse tyson', id: 2}
 })
 
-worker.on('rejectThis', ({reject}) => {
-  reject('error')
+worker.on('rejectThis', () => {
+  return new Promise((resolve, reject) => {
+    reject('error')
+  })
 })
 
 worker.on('throwError', () => {
@@ -39,7 +42,7 @@ setTimeout(() => {
 worker.emit('chain1', 1)
 worker.emit('chain2', 2)
 
-//It should be able to terminate the execution of a worker
-worker.on('termination', ({payload, resolve})=>{
-  resolve('Noope, I am still alive')
+// It should be able to terminate the execution of a worker
+worker.on('termination', ({payload}) => {
+  return 'Noope, I am still alive'
 })

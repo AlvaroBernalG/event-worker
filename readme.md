@@ -5,8 +5,8 @@
 
 ## Install
 
-```
-$ npm install event-worker --save
+```shell
+npm install event-worker --save
 ```
 
 ## Usage
@@ -20,7 +20,9 @@ const EventWorker = require('event-worker')
 
 const worker = new EventWorker('path/to/my/worker.js')
 
-let result = await worker.emit('getUserById', {id: '30242'})
+async function test(){
+  let result = await worker.emit('getUserById', { id: '30242' })
+}
   /*
   {
     id: '30242',
@@ -31,6 +33,7 @@ let result = await worker.emit('getUserById', {id: '30242'})
 //...
 
 ```
+
 And then in your web worker (worker.js) you can listen for that event and respond back with the requested data:
 
 ```js
@@ -38,11 +41,11 @@ const EventWorker = require('event-worker')
 
 const worker = new EventWorker()
 
-worker.on('getUserById', async ({payload, resolve})=> {
+worker.on('getUserById', async ({payload})=> {
 
   let user = await getUser('id', payload.id)
 
-  resolve(user) // Respond back to the main thread with the data requested.
+  return user // Respond back to the main thread with the data requested.
 
 })
 
@@ -60,7 +63,7 @@ async function getUser(id){
 }
 ```
 
-#### Workload splitting
+### Workload splitting
 
 If you want to keep your main thread running smoothly dividing the work load of expensive computational task between multiple web workers becomes easier.
 
@@ -90,30 +93,33 @@ const multiplyBy2InOtherThread = (worker, number) => worker.emit('multiply_by_2'
 ```
 
 From worker (worker.js):
+
 ```js
+
 importScripts('path/to/source/event-worker.js')
 
 const worker = new EventWorker()
 
-worker.on('multiply_by_2', ({payload, resolve}) => {
-  resolve(payload * 2)
+worker.on('multiply_by_2', ({payload}) => {
+  return payload * 2
 })
 
 ```
 
 #### Bidirectional communication
 
-You can listen for events triggered by your workers.  
+You can listen for events triggered by your workers.
 
 From main thread (main.js):
+
 ```js
 //...
 
-worker.on('interestingData', ({payload, resolve})=>{
+worker.on('interestingData', ({payload})=>{
 
   doSomethingWithInterestingData(payload)
 
-  resolve('Good job worker!')
+  return 'Good job worker!'
 
 })
 
@@ -130,6 +136,7 @@ const res = await worker.emit('interestingData', 'interestingString')
 res // => 'Good job worker!!'
 
 ```
+
 #### Inlining code
 
 Instead of having a separate file for your worker, you can wrap your code inside a function and pass it as
@@ -141,22 +148,22 @@ From main (main.js):
 
 const worker = new EventWorker(async (mainThread) => {
 
-  let res = await mainThread.emit('sayingHiFromWorker', 'Hi main thread!')   
+  let res = await mainThread.emit('sayingHiFromWorker', 'Hi main thread!')
 
   console.log(res) // Hello worker!
 
 })
 
-worker.on('sayingHiFromWorker', ({payload, resolve}) => {
+worker.on('sayingHiFromWorker', ({payload}) => {
 
   console.log(payload) // Hi main thread!
 
-  resolve("Hello worker!")
+  return "Hello worker!"
 
 })
 ```
 
-##### Caveat
+#### Caveat
 
 When you inline functions it is easy to get confused by the execution context. If you try to access a variable that is outside the scope of the inline function it will fail.
 
@@ -171,11 +178,12 @@ const worker = new EventWorker(async (mainThread) => {
     console.log(favoriteAnimal) // fails. favoriteAnimal variable is not in the same execution context.
 
     //...
-  })   
+  })
 
 })
 
 ```
+
 #### Error Handling
 
 Error handling works the same as you would expect from a promise executed in the same thread:
@@ -195,14 +203,12 @@ worker.emit('rejectThisCall')
 ```
 
 From worker (worker.js):
+
 ```js
+
 importScripts('path/to/source/event-worker.js')
 
 const worker = new EventWorker()
-
-worker.on('rejectThisCall', ({reject})=> {
-  reject('I am bad..')
-})
 
 //throwing errors
 worker.on('rejectThisCall', () => {
@@ -232,9 +238,10 @@ EventWorker reference is injected into the global scope once it's loaded.
 
 ## API
 
-#### new EventWorker(source) `EventWorker`
+### new EventWorker(source) `EventWorker`
 
 Creates a new instance
+
   * source `string | function | undefined`
 
     * If a string is passed: It will assume it is the worker source file path.
@@ -243,23 +250,21 @@ Creates a new instance
 
     * If nothing (undefined) is passed it will assume that the environment is the worker.
 
-
-
-#### emit(eventName, data) `Promise`
+### emit(eventName, data) `Promise`
 
 Emits a event.
+
   * eventName `String`
 
   * data `Any`
 
+### on(eventName, callback) `EventWorker`
 
-#### on(eventName, callback) `EventWorker`
-
-Registers  for an event.
+Registers for an event.
 
 * eventName
 
-* callback `function(object) => void`
+* callback `function(object) => Promise<any>`
 
   Gets executed when eventName is emited.
 
@@ -268,21 +273,19 @@ Registers  for an event.
 
       Data sent from the event emitter to the listener.
 
-    * object.resolve  `function`
-
-      Function that allows the listerner to resolve the promise.
-
-    * object.reject  `function`
-
-      Function that allows the listener to reject the promise.
-
 ### terminate() `void`
 
 Immediately terminates the Worker. This does not offer the worker an opportunity to finish its operations; it is simply stopped at once.
+
+## Changelog
+
+### 2017-11-04 
+  * Removed `"resolve"` and `"reject"` function properties in the `"on"` callback. 
 
 ## Contributing
 
 All contributions are welcome.
 
 ## License
+
 MIT © [Alvaro Bernal](https://github.com/AlvaroBernalG/)

@@ -1,7 +1,7 @@
 ;(function innerSelf () {
   const _newId = ((id = 0) => () => id += 1)()
 
-  const _newEventId = (eventName) => `${_newId()}_${eventName}`
+  const _newEventId = (eventName) => `${_newId()}_${eventName}_`
 
   const _onMessage = (fn) => ({data}) => {
     const [id, eventName, error, payload] = data
@@ -62,21 +62,19 @@
     }
 
     [_onIncomingMessage] () {
-      return _onMessage((messageId, eventName, error, payload) => {
-        const callbacks = this.callbacks
+      return _onMessage(async (messageId, eventName, error, payload) => {
         const responseBundle = this[_createResponseBundle](messageId, eventName)
         const rejectBundle = this[_createRejectBundle](messageId, eventName)
-        const callbackOpts = error ? {error } : { payload, resolve: responseBundle, reject: rejectBundle }
-        const callback = callbacks[messageId] || callbacks[eventName]
+        const callback = this.callbacks[messageId] || this.callbacks[eventName]
 
-        if (callback === undefined) return
-
-        const onError = (error) => callbackOpts.reject(error.stack)
+        if (!callback) return
 
         try {
-          Promise.resolve(callback(callbackOpts)).catch(onError)
+          const res = await callback(error ? { error } : { payload})
+          if (res === undefined || error) return
+          responseBundle(res)
         } catch (error) {
-          onError(error)
+          rejectBundle(error.stack)
         }
       })
     }
@@ -96,6 +94,7 @@
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = EventWorker
+    window.EventWorker = EventWorker
   } else if (typeof window !== 'undefined') {
     window.EventWorker = document.EventWorker = EventWorker
   } else {
