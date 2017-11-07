@@ -14,7 +14,8 @@
     "test:browsers": "karma start --single-run --browsers Safari,Firefox,ChromeHeadless karma.conf.js",
     "test-watch": "node node_modules/karma/bin/karma start --browsers=ChromeHeadless --single-run=false --auto-watch",
     "format": "./node_modules/standard/bin/cmd.js",
-    "build": "rm -rf dist/ && mkdir dist/ && babel index.js --presets=es2015 | uglifyjs > dist/eventworker.min.js"
+    "clean": "rm -rf dist/ && mkdir dist/",
+    "build": "npm run clean && babel index.js --presets=es2015 --plugins=transform-async-to-generator | uglifyjs > dist/eventworker.min.js"
   },
   "keywords": [
     "worker",
@@ -50,6 +51,7 @@
   "reveal": "true",
   "dependencies": {},
   "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "browserify": "^14.4.0",
     "browserify-shim": "^3.8.14",
