@@ -94,7 +94,6 @@
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = EventWorker
-    window.EventWorker = EventWorker
   } else if (typeof window !== 'undefined') {
     window.EventWorker = document.EventWorker = EventWorker
   } else {

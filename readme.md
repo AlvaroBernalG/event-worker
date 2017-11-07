@@ -21,8 +21,8 @@ const EventWorker = require('event-worker')
 const worker = new EventWorker('path/to/my/worker.js')
 
 async function test(){
-  let result = await worker.emit('getUserById', { id: '30242' })
-}
+  const user = await worker.emit('getUserById', { id: '30242' })
+
   /*
   {
     id: '30242',
@@ -41,13 +41,14 @@ const EventWorker = require('event-worker')
 
 const worker = new EventWorker()
 
-worker.on('getUserById', async ({payload})=> {
+worker.on('getUserById', async ({payload}) => {
 
-  let user = await getUser('id', payload.id)
+  let user = await getUser(payload.id)
 
   return user // Respond back to the main thread with the data requested.
 
 })
+
 
 async function getUser(id){
 
@@ -82,7 +83,7 @@ const workerPool = [
 
 const sum = (a, b) => a + b
 
-const multiplyBy2InOtherThread = (worker, number) => worker.emit('multiply_by_2', number)
+const multiplyBy2InOtherThread = (worker, index) => worker.emit('multiply_by_2', index)
 
 (async ()=>
   (await Promise.all(
@@ -100,9 +101,7 @@ importScripts('path/to/source/event-worker.js')
 
 const worker = new EventWorker()
 
-worker.on('multiply_by_2', ({payload}) => {
-  return payload * 2
-})
+worker.on('multiply_by_2', ({payload}) => payload * 2 )
 
 ```
 
