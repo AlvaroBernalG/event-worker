@@ -27,12 +27,52 @@
   const _deleteCallback = Symbol('_deleteCallback')
   const _onIncomingMessage = Symbol('_onIncomingMessage')
 
+  function destroyCircular(from, seen) {
+    const to = Array.isArray(from) ? [] : {};
+  
+    seen.push(from);
+  
+    for (const key of Object.keys(from)) {
+      const value = from[key];
+  
+      if (typeof value === 'function') {
+        continue;
+      }
+  
+      if (!value || typeof value !== 'object') {
+        to[key] = value;
+        continue;
+      }
+  
+      if (seen.indexOf(from[key]) === -1) {
+        to[key] = destroyCircular(from[key], seen.slice(0));
+        continue;
+      }
+  
+      to[key] = '[Circular]';
+    }
+  
+    if (typeof from.name === 'string') {
+      to.name = from.name;
+    }
+  
+    if (typeof from.message === 'string') {
+      to.message = from.message;
+    }
+  
+    if (typeof from.stack === 'string') {
+      to.stack = from.stack;
+    }
+  
+    return to;
+  }
+
   class EventWorker {
     constructor (opts) {
       this.callbacks = {}
       this.terminated = false
       // if opts is undefined, I assume the environment is the worker
-      this.worker = opts.worker ? opts.worker
+      this.worker = opts && Object.getPrototypeOf(opts) === Worker.prototype ? opts
         : _isFunc(opts) ? new Worker(_fromFuncToURL(opts))
         : (_isString(opts) ? new Worker(opts) : self)
       this.worker.onmessage = this[_onIncomingMessage]()
@@ -44,7 +84,7 @@
 
         this.on(eventId, ({payload, error}) => {
           this[_deleteCallback](eventId)
-          if (error) return reject(error)
+          if (error) return reject(JSON.parse(error))
           resolve(payload)
         })
 
@@ -75,7 +115,7 @@
           if (res === undefined || error) return
           responseBundle(res)
         } catch (error) {
-          rejectBundle(error.stack)
+          rejectBundle(JSON.stringify(destroyCircular(error,[])))
         }
       })
     }
