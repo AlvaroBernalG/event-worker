@@ -5,9 +5,15 @@
 
 ## Install
 
+### npm
 ```shell
 npm install event-worker --save
 ```
+
+### CDN
+
+https://cdn.jsdelivr.net/npm/event-worker@1.3.0/index.min.js
+
 
 ## Usage
 
