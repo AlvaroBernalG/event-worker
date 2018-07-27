@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("\nconst EventWorker = __webpack_require__(/*! event-worker */ \"./node_modules/event-worker/index.js\");\n\nconst sumWorker = new EventWorker(\"sumWorker.js\");\nconst multiplierWorker = new EventWorker(\"multiplyWorker.js\");\nconst dividerWorker = new EventWorker(async mainThread => {\n  mainThread.on(\"divide\", ({payload}) => {\n    return payload.a / payload.b\n  })\n});\n\n( async function() {\n\nlet sumResult = await sumWorker.emit(\"sum\", {a: 2, b: 4});\n\nlet multiplyResult = await multiplierWorker.emit(\"multiply\", {a: sumResult, b: 4});\n\nlet divideResult = await dividerWorker.emit(\"divide\", {a: multiplyResult, b: 6})\n\nconsole.log(`2+4=[${sumResult}] and ${sumResult}*4=[${multiplyResult}] and ${multiplyResult}/6=[${divideResult}]`);\n\n})();\n\n\n\n\n\n\n\n\n//# sourceURL=webpack:///./main.js?");
+eval("\nconst EventWorker = __webpack_require__(/*! event-worker */ \"./node_modules/event-worker/index.js\");\nconst sumWorker = new EventWorker(\"worker.sum.js\");\nconst multiplierWorker = new EventWorker(\"worker.multiply.js\");\n\nconst dividerWorker = new EventWorker(async mainThread => {\n  mainThread.on(\"divide\", ({payload}) => {\n    return payload.a / payload.b\n  })\n});\n\n(async function() {\n\nlet sumResult = await sumWorker.emit(\"sum\", {a: 2, b: 4});\n\nlet multiplyResult = await multiplierWorker.emit(\"multiply\", {a: sumResult, b: 4});\n\nlet divideResult = await dividerWorker.emit(\"divide\", {a: multiplyResult, b: 6})\n\nconsole.log(`2+4=[${sumResult}] and ${sumResult}*4=[${multiplyResult}] and ${multiplyResult}/6=[${divideResult}]`);\n\n})();\n\n//# sourceURL=webpack:///./main.js?");
 
 /***/ }),
 

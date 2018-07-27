@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./sumWorker.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./worker.sum.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -97,14 +97,14 @@ eval(";(function innerSelf () {\n  const _newId = ((id = 0) => () => id += 1)()\
 
 /***/ }),
 
-/***/ "./sumWorker.js":
-/*!**********************!*\
-  !*** ./sumWorker.js ***!
-  \**********************/
+/***/ "./worker.sum.js":
+/*!***********************!*\
+  !*** ./worker.sum.js ***!
+  \***********************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const EventWorker = __webpack_require__(/*! event-worker */ \"./node_modules/event-worker/index.js\")\n\nconst worker = new EventWorker()\n\nworker.on('sum', ({payload}) => {\n  return payload.a + payload.b\n})\n\n\n\n//# sourceURL=webpack:///./sumWorker.js?");
+eval("const EventWorker = __webpack_require__(/*! event-worker */ \"./node_modules/event-worker/index.js\")\n\nconst worker = new EventWorker()\n\nworker.on('sum', ({payload}) => {\n  return payload.a + payload.b\n})\n\n\n\n//# sourceURL=webpack:///./worker.sum.js?");
 
 /***/ })
 

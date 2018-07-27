@@ -1,14 +1,12 @@
 const path = require('path');
 let res = path.resolve(__dirname, 'dist')
 
-console.log(res);
-
 module.exports = {
   mode: "development",
   entry: {
     main: './main.js', 
-    multiplyWorker: './multiplyWorker.js',
-    sumWorker: './sumWorker.js'
+    'worker.multiply': './worker.multiply.js',
+    'worker.sum': './worker.sum.js'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
