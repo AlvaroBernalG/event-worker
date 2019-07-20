@@ -60,18 +60,18 @@
     "chai": "^4.1.0",
     "cors": "^2.8.4",
     "eslint": "^4.2.0",
-    "karma": "^1.7.0",
+    "karma": "^4.2.0",
     "karma-babel-preprocessor": "^6.0.1",
-    "karma-browserify": "^5.1.1",
+    "karma-browserify": "^6.1.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.0.1",
     "karma-mocha": "^1.3.0",
     "karma-safari-launcher": "^1.0.0",
-    "live-server": "^1.2.0",
-    "mocha": "^3.4.2",
+    "live-server": "^1.2.1",
+    "mocha": "^6.2.0",
     "standard": "^10.0.3",
-    "watchify": "^3.9.0"
+    "watchify": "^3.11.1"
   },
   "files": [
     "index.js"
