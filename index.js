@@ -13,7 +13,7 @@
        ${_wrapSelfExecFn(innerSelf + '')}
        ${_wrapSelfExecFn(func + '', 'new EventWorker()')}
       `
-    return window.URL.createObjectURL(new Blob([codeToInject]))
+    return URL.createObjectURL(new Blob([codeToInject], {type: 'application/javascript'}))
   }
 
   const _wrapSelfExecFn = (str, params = '') => `;(${str})(${params});`
