@@ -31,7 +31,7 @@
     constructor (opts) {
       this.callbacks = {}
       this.terminated = false
-      // if opts is undefined, I assume the environment is the worker
+      // if opts is undefined, I assume that the execution environment is inside a Worker.js
       this.worker = _isFunc(opts) ? new Worker(_fromFuncToURL(opts))
         : (_isString(opts) ? new Worker(opts) : self)
       this.worker.onmessage = this[_onIncomingMessage]()
