@@ -9,10 +9,10 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "html-loader": "^0.5.5",
+    "html-loader": "^4.2.0",
     "live-server": "^1.2.0",
-    "webpack": "^4.16.2",
-    "webpack-cli": "^3.1.0"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   },
   "dependencies": {
     "event-worker": "^1.2.0"
