@@ -66,7 +66,7 @@
     "karma-chrome-launcher": "^2.2.0",
     "karma-mocha": "^1.3.0",
     "live-server": "^1.2.1",
-    "mocha": "^6.2.0",
+    "mocha": "^10.2.0",
     "standard": "^10.0.3",
     "watchify": "^3.11.1"
   },
